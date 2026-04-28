@@ -1,0 +1,10 @@
+# JMeter runtime artifacts
+tokens.csv
+*.jtl
+jmeter.log
+report/
+result/
+
+# OS
+.DS_Store
+Thumbs.db

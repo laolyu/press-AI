@@ -1,0 +1,37 @@
+数据库变更前置工作
+DBA: 
+    配置文件修改，内存配置修改到32G wiredTigerCacheSizeGB=32
+数据库开始变更
+
+1、关闭balancer
+DBA
+    在mongos执行sh.stopBalancer()
+
+2、逐台操作一个分片的所有从节点:
+DBA 在mongod执行
+use admin;
+db.shutdownServer();确认服务停止后，将机器关机，等待升配，升配完成后，将服务启动mongod -f /etc/mongod.conf
+检查同步情况，延迟和同步状态正常之后，再开始操作下一台从节点
+资源组 升配，实例类型修改为r6i.2xlarge
+
+3、操作一个分片的主节点
+DQA 在mongod先手动主从切换rs.stepDown()再停止服务use admin;db.shutdownServer();确认服务停止后，将机器关机, 等待升配，升配完成后，将服务启动mongod -f /etc/mongod.conf
+
+资源组 升配，实例类型修改为r6i.2xlarge
+研发 操作期间观察相关业务是否正常
+运维 操作期间检查是否有相关的错误日志
+测试 生产回归验证
+
+4、 重复2、3两步，逐个操作其余分片
+
+5, 在此期间测试组压测接口,并提供一定的负载, 初步计划采用50个线程,并给"投注"接口分50%流量, 根据基线压测情况调整线程数, 主要压测以下接口,
+ai/mobile/player/getBalance	GET	wid=1	热门	查询会员余额
+ai/mobile/player/playerAccount	GET	登录用户	热门	查询会员基础信息
+ai/mobile/home/common/matches	GET	gameSort=1&gameType=&showIcon=true&gameTypeSon=&showtype=&page=1&pageSize=10&groupId=1	热门	赛事列表
+api/c/game/getGameManyInfo	GET	gidms=412175655,6806197594564124672,6806219112262139904,413078428,412290013,6806421724500652032,413153041,17524894,6806212935696576512,413258676	热门	赛事多语言
+ai/mobile/matches/getRBCondition	GET	groupId=1	滚球	滚球体育项
+"ai/mobile/matches/commonMatches/orderLeagueList"	GET	gameTypeSon=&gameType=FT&showtype=RB&leagueIds=&timeStage=0&gameSort=4&dateStage=0&isNovice=Y&onlyFavorite=0&groupId=1&virtualType=2	滚球	联赛分组
+ai/mobile/player/capitalRecords	GET	page=1&pageSize=20&beginDate=&endDate=&needCount=1&tradeType=	钱包	流水列表
+ai/mobile/order/all/betRecordTab	POST		注单	注单列表
+ai/mobile/bet/order/morePW	POST		注单	点水
+ai/mobile/bet/order/moreBetting	POST		注单	投注

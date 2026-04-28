@@ -1,0 +1,695 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.6.3">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="AI 项目 MongoDB 升配压测" enabled="true">
+      <stringProp name="TestPlan.comments">配合 DBA MongoDB 升配窗口，对核心接口持续施压；投注 50% + 其余 9 接口均分 50%。投注采用动态点水→投注链路。</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables">
+        <collectionProp name="Arguments.arguments">
+          <elementProp name="HOST" elementType="Argument">
+            <stringProp name="Argument.name">HOST</stringProp>
+            <stringProp name="Argument.value">01m.cruzbear666.com</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="PROTOCOL" elementType="Argument">
+            <stringProp name="Argument.name">PROTOCOL</stringProp>
+            <stringProp name="Argument.value">https</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="MERCHANT_ID" elementType="Argument">
+            <stringProp name="Argument.name">MERCHANT_ID</stringProp>
+            <stringProp name="Argument.value">136ebd8d5055e6edc6f1bf39289e740f</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="PASSWORD_MD5" elementType="Argument">
+            <stringProp name="Argument.name">PASSWORD_MD5</stringProp>
+            <stringProp name="Argument.value">62c8ad0a15d9d1ca38d5dee762a16e01</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="BET_GOLD" elementType="Argument">
+            <stringProp name="Argument.name">BET_GOLD</stringProp>
+            <stringProp name="Argument.value">50</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+        </collectionProp>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+
+      <ConfigTestElement guiclass="HttpDefaultsGui" testclass="ConfigTestElement" testname="HTTP Request Defaults" enabled="true">
+        <stringProp name="HTTPSampler.domain">${HOST}</stringProp>
+        <stringProp name="HTTPSampler.protocol">${PROTOCOL}</stringProp>
+        <stringProp name="HTTPSampler.connect_timeout">10000</stringProp>
+        <stringProp name="HTTPSampler.response_timeout">30000</stringProp>
+        <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+          <collectionProp name="Arguments.arguments"/>
+        </elementProp>
+      </ConfigTestElement>
+      <hashTree/>
+
+      <!-- ========================== setUp: 批量登录生成 tokens.csv ========================== -->
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp - 批量登录生成 tokens.csv" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">${__P(users,500)}</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">10</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">5</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+
+        <OnceOnlyController guiclass="OnceOnlyControllerGui" testclass="OnceOnlyController" testname="Once Only - 清理 tokens.csv" enabled="true"/>
+        <hashTree>
+          <JSR223Sampler guiclass="TestBeanGUI" testclass="JSR223Sampler" testname="清理 tokens.csv" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import org.apache.jmeter.services.FileServer
+def baseDir = FileServer.getFileServer().getBaseDir()
+def f = new File(baseDir, &quot;tokens.csv&quot;)
+if (f.exists()) f.delete()
+f.createNewFile()
+log.info(&quot;tokens.csv cleared at: &quot; + f.absolutePath)
+SampleResult.setIgnore()</stringProp>
+          </JSR223Sampler>
+          <hashTree/>
+        </hashTree>
+
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="user.csv - loginName" enabled="true">
+          <stringProp name="filename">user.csv</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="variableNames">loginName</stringProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">false</boolProp>
+          <boolProp name="stopThread">true</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /ai/mobile/login" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&quot;merchantId&quot;:&quot;${MERCHANT_ID}&quot;,&quot;loginName&quot;:&quot;${loginName}&quot;,&quot;passWord&quot;:&quot;${PASSWORD_MD5}&quot;}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.path">/ai/mobile/login</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Login Headers" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="h0" elementType="Header"><stringProp name="Header.name">Content-Type</stringProp><stringProp name="Header.value">application/json;charset=UTF-8</stringProp></elementProp>
+              <elementProp name="h1" elementType="Header"><stringProp name="Header.name">Accept</stringProp><stringProp name="Header.value">application/json, text/plain, */*</stringProp></elementProp>
+              <elementProp name="h2" elementType="Header"><stringProp name="Header.name">apiVer</stringProp><stringProp name="Header.value">4.15</stringProp></elementProp>
+              <elementProp name="h3" elementType="Header"><stringProp name="Header.name">wid</stringProp><stringProp name="Header.value">1</stringProp></elementProp>
+              <elementProp name="h4" elementType="Header"><stringProp name="Header.name">terType</stringProp><stringProp name="Header.value">2</stringProp></elementProp>
+              <elementProp name="h5" elementType="Header"><stringProp name="Header.name">groupId</stringProp><stringProp name="Header.value">0</stringProp></elementProp>
+              <elementProp name="h6" elementType="Header"><stringProp name="Header.name">lang</stringProp><stringProp name="Header.value">zh-cn</stringProp></elementProp>
+              <elementProp name="h7" elementType="Header"><stringProp name="Header.name">Origin</stringProp><stringProp name="Header.value">https://01m.cruzbear666.com</stringProp></elementProp>
+              <elementProp name="h8" elementType="Header"><stringProp name="Header.name">Referer</stringProp><stringProp name="Header.value">https://01m.cruzbear666.com/login</stringProp></elementProp>
+              <elementProp name="h9" elementType="Header"><stringProp name="Header.name">User-Agent</stringProp><stringProp name="Header.value">Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36</stringProp></elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+
+          <JSONPostProcessor guiclass="JSONPostProcessorGui" testclass="JSONPostProcessor" testname="提取 token" enabled="true">
+            <stringProp name="JSONPostProcessor.referenceNames">token</stringProp>
+            <stringProp name="JSONPostProcessor.jsonPathExprs">$.data</stringProp>
+            <stringProp name="JSONPostProcessor.match_numbers">1</stringProp>
+            <stringProp name="JSONPostProcessor.defaultValues">NA</stringProp>
+          </JSONPostProcessor>
+          <hashTree/>
+
+          <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="登录成功断言" enabled="true">
+            <collectionProp name="Asserion.test_strings">
+              <stringProp name="49586">&quot;code&quot;:200</stringProp>
+            </collectionProp>
+            <stringProp name="Assertion.custom_message"></stringProp>
+            <stringProp name="Assertion.test_field">Assertion.response_data</stringProp>
+            <boolProp name="Assertion.assume_success">false</boolProp>
+            <intProp name="Assertion.test_type">16</intProp>
+          </ResponseAssertion>
+          <hashTree/>
+
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="写入 tokens.csv" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import org.apache.jmeter.services.FileServer
+def loginName = vars.get(&quot;loginName&quot;)
+def token = vars.get(&quot;token&quot;)
+if (token == null || token.isEmpty() || token == &quot;NA&quot;) {
+    log.warn(&quot;login failed: &quot; + loginName + &quot;, resp=&quot; + prev.getResponseDataAsString())
+    return
+}
+def f = new File(FileServer.getFileServer().getBaseDir(), &quot;tokens.csv&quot;)
+synchronized(this.getClass()) {
+    f.append(loginName + &quot;,&quot; + token + &quot;\n&quot;, &quot;UTF-8&quot;)
+}</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+
+      </hashTree>
+
+      <!-- ========================== setUp #2: 拉取热门赛事池（写入 props 共享） ========================== -->
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp - 拉取热门赛事池" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+      </SetupThreadGroup>
+      <hashTree>
+
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="tokens.csv - 取一个 token 用于赛事拉取" enabled="true">
+          <stringProp name="filename">tokens.csv</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="variableNames">loginName,token</stringProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">shareMode.thread</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /home/common/matches（取赛事池）" enabled="true">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="gameSort" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameSort</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              <elementProp name="gameType" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameType</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              <elementProp name="showIcon" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">showIcon</stringProp><stringProp name="Argument.value">true</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              <elementProp name="page" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">page</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              <elementProp name="pageSize" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">pageSize</stringProp><stringProp name="Argument.value">50</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              <elementProp name="groupId" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">groupId</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.path">/ai/mobile/home/common/matches</stringProp>
+          <stringProp name="HTTPSampler.method">GET</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="Headers" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="h0" elementType="Header"><stringProp name="Header.name">Accept</stringProp><stringProp name="Header.value">application/json, text/plain, */*</stringProp></elementProp>
+              <elementProp name="h1" elementType="Header"><stringProp name="Header.name">apiver</stringProp><stringProp name="Header.value">4.15</stringProp></elementProp>
+              <elementProp name="h2" elementType="Header"><stringProp name="Header.name">wid</stringProp><stringProp name="Header.value">1</stringProp></elementProp>
+              <elementProp name="h3" elementType="Header"><stringProp name="Header.name">tertype</stringProp><stringProp name="Header.value">2</stringProp></elementProp>
+              <elementProp name="h4" elementType="Header"><stringProp name="Header.name">groupid</stringProp><stringProp name="Header.value">1</stringProp></elementProp>
+              <elementProp name="h5" elementType="Header"><stringProp name="Header.name">lang</stringProp><stringProp name="Header.value">zh-cn</stringProp></elementProp>
+              <elementProp name="h6" elementType="Header"><stringProp name="Header.name">Referer</stringProp><stringProp name="Header.value">https://01m.cruzbear666.com/</stringProp></elementProp>
+              <elementProp name="h7" elementType="Header"><stringProp name="Header.name">User-Agent</stringProp><stringProp name="Header.value">Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36</stringProp></elementProp>
+              <elementProp name="h8" elementType="Header"><stringProp name="Header.name">token</stringProp><stringProp name="Header.value">${token}</stringProp></elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+
+          <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="解析赛事池→props" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">import groovy.json.JsonSlurper
+
+def resp = prev.getResponseDataAsString()
+def json = new JsonSlurper().parseText(resp)
+
+// 兼容多种返回结构，递归找出含 gidm 的对象
+def pool = []
+def walk
+walk = { node -&gt;
+    if (node instanceof Map) {
+        if (node.gidm &amp;&amp; node.gameId) {
+            pool &lt;&lt; [
+                gidm:    node.gidm.toString(),
+                gameId:  node.gameId.toString(),
+                gameType:(node.gameType ?: &quot;FT&quot;).toString(),
+                leagueId:(node.leagueId ?: &quot;&quot;).toString(),
+                systemId:(node.systemId ?: &quot;&quot;).toString(),
+                homeTeam:(node.homeTeam ?: node.hName ?: &quot;&quot;).toString()
+            ]
+        }
+        node.each { k, v -&gt; walk(v) }
+    } else if (node instanceof List) {
+        node.each { walk(it) }
+    }
+}
+walk(json)
+
+// 去重
+def seen = [:] as LinkedHashMap
+pool.each { seen[it.gidm + &quot;_&quot; + it.gameId] = it }
+def uniq = seen.values() as List
+
+if (uniq.isEmpty()) {
+    log.warn(&quot;赛事池为空，将使用默认 fallback&quot;)
+    uniq = [[gidm:&quot;ib_7764494&quot;, gameId:&quot;7062614&quot;, gameType:&quot;FT&quot;, leagueId:&quot;&quot;, systemId:&quot;6832360251084001280&quot;, homeTeam:&quot;巴黎圣日耳曼&quot;]]
+}
+
+props.put(&quot;BET_POOL&quot;, uniq)
+props.put(&quot;BET_POOL_SIZE&quot;, uniq.size().toString())
+log.info(&quot;赛事池大小: &quot; + uniq.size())</stringProp>
+          </JSR223PostProcessor>
+          <hashTree/>
+        </hashTree>
+
+      </hashTree>
+
+      <!-- ========================== Main: 业务压测 ========================== -->
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="主压测线程组（阶梯加压）" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller">
+          <boolProp name="LoopController.continue_forever">true</boolProp>
+          <stringProp name="LoopController.loops">-1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">${__P(threads,50)}</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">${__P(rampup,600)}</stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">${__P(duration,3600)}</stringProp>
+        <stringProp name="ThreadGroup.delay">0</stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="tokens.csv - loginName,token" enabled="true">
+          <stringProp name="filename">tokens.csv</stringProp>
+          <stringProp name="fileEncoding">UTF-8</stringProp>
+          <stringProp name="variableNames">loginName,token</stringProp>
+          <boolProp name="ignoreFirstLine">false</boolProp>
+          <stringProp name="delimiter">,</stringProp>
+          <boolProp name="quotedData">false</boolProp>
+          <boolProp name="recycle">true</boolProp>
+          <boolProp name="stopThread">false</boolProp>
+          <stringProp name="shareMode">shareMode.all</stringProp>
+        </CSVDataSet>
+        <hashTree/>
+
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="通用 Headers（含 token）" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="h0" elementType="Header"><stringProp name="Header.name">Accept</stringProp><stringProp name="Header.value">application/json, text/plain, */*</stringProp></elementProp>
+            <elementProp name="h1" elementType="Header"><stringProp name="Header.name">Content-Type</stringProp><stringProp name="Header.value">application/json;charset=UTF-8</stringProp></elementProp>
+            <elementProp name="h2" elementType="Header"><stringProp name="Header.name">apiver</stringProp><stringProp name="Header.value">4.15</stringProp></elementProp>
+            <elementProp name="h3" elementType="Header"><stringProp name="Header.name">wid</stringProp><stringProp name="Header.value">1</stringProp></elementProp>
+            <elementProp name="h4" elementType="Header"><stringProp name="Header.name">tertype</stringProp><stringProp name="Header.value">2</stringProp></elementProp>
+            <elementProp name="h5" elementType="Header"><stringProp name="Header.name">groupid</stringProp><stringProp name="Header.value">1</stringProp></elementProp>
+            <elementProp name="h6" elementType="Header"><stringProp name="Header.name">lang</stringProp><stringProp name="Header.value">zh-cn</stringProp></elementProp>
+            <elementProp name="h7" elementType="Header"><stringProp name="Header.name">Origin</stringProp><stringProp name="Header.value">https://01m.cruzbear666.com</stringProp></elementProp>
+            <elementProp name="h8" elementType="Header"><stringProp name="Header.name">Referer</stringProp><stringProp name="Header.value">https://01m.cruzbear666.com/</stringProp></elementProp>
+            <elementProp name="h9" elementType="Header"><stringProp name="Header.name">User-Agent</stringProp><stringProp name="Header.value">Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36</stringProp></elementProp>
+            <elementProp name="h10" elementType="Header"><stringProp name="Header.name">token</stringProp><stringProp name="Header.value">${token}</stringProp></elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+
+        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 200 断言" enabled="true">
+          <collectionProp name="Asserion.test_strings">
+            <stringProp name="49586">200</stringProp>
+          </collectionProp>
+          <stringProp name="Assertion.custom_message"></stringProp>
+          <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
+          <boolProp name="Assertion.assume_success">false</boolProp>
+          <intProp name="Assertion.test_type">8</intProp>
+        </ResponseAssertion>
+        <hashTree/>
+
+        <!-- ============ 50% 投注复合事务（点水→投注） ============ -->
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 50% - 投注事务（动态点水→投注）" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>50.0</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="从赛事池随机选一场" enabled="true">
+            <stringProp name="scriptLanguage">groovy</stringProp>
+            <stringProp name="parameters"></stringProp>
+            <stringProp name="filename"></stringProp>
+            <stringProp name="cacheKey">true</stringProp>
+            <stringProp name="script">def pool = props.get(&quot;BET_POOL&quot;)
+if (pool == null || pool.isEmpty()) {
+    vars.put(&quot;sel_gidm&quot;, &quot;ib_7764494&quot;)
+    vars.put(&quot;sel_gameId&quot;, &quot;7062614&quot;)
+    vars.put(&quot;sel_gameType&quot;, &quot;FT&quot;)
+    vars.put(&quot;sel_leagueId&quot;, &quot;&quot;)
+    vars.put(&quot;sel_systemId&quot;, &quot;6832360251084001280&quot;)
+    vars.put(&quot;sel_homeTeam&quot;, &quot;巴黎圣日耳曼&quot;)
+    return
+}
+def idx = new Random().nextInt(pool.size())
+def m = pool[idx]
+vars.put(&quot;sel_gidm&quot;, m.gidm)
+vars.put(&quot;sel_gameId&quot;, m.gameId)
+vars.put(&quot;sel_gameType&quot;, m.gameType)
+vars.put(&quot;sel_leagueId&quot;, m.leagueId)
+vars.put(&quot;sel_systemId&quot;, m.systemId)
+vars.put(&quot;sel_homeTeam&quot;, m.homeTeam ?: &quot;TeamH&quot;)</stringProp>
+          </JSR223PreProcessor>
+          <hashTree/>
+
+          <!-- 步骤 1：morePW 点水（拿真实赔率） -->
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /bet/order/morePW（点水）" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;betList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;gameType&quot;:&quot;${sel_gameType}&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;ratioType&quot;:&quot;MH&quot;,&quot;score&quot;:&quot;&quot;,&quot;ratio&quot;:&quot;+12470&quot;,&quot;betItem&quot;:&quot;${sel_homeTeam}&quot;,&quot;ratioKey&quot;:&quot;${sel_gidm}_${sel_gameId}_M_MH&quot;,&quot;systemId&quot;:&quot;${sel_systemId}&quot;,&quot;homeTeamSuffix&quot;:&quot;&quot;}],&quot;oddfType&quot;:&quot;H&quot;,&quot;groupId&quot;:1,&quot;sourceType&quot;:true}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/bet/order/morePW</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree>
+            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="解析点水结果（提取最新 ior/ratio）" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">import groovy.json.JsonSlurper
+
+vars.put(&quot;pw_ok&quot;, &quot;0&quot;)
+def txt = prev.getResponseDataAsString()
+if (!txt) return
+
+def json
+try { json = new JsonSlurper().parseText(txt) } catch (e) { return }
+
+// 找出第一条带 ior 的项
+def found = null
+def walk
+walk = { node -&gt;
+    if (found != null) return
+    if (node instanceof Map) {
+        if (node.ior &amp;&amp; (node.ratio || node.ratioIpo)) { found = node; return }
+        node.each { k, v -&gt; walk(v) }
+    } else if (node instanceof List) {
+        node.each { walk(it) }
+    }
+}
+walk(json)
+
+if (found == null) {
+    // 未拿到实时赔率：跳过本次投注（投注采样器用 If Controller 判断）
+    return
+}
+
+def ior      = (found.ior ?: &quot;2.47&quot;).toString()
+def ratio    = (found.ratio ?: &quot;1+2470&quot;).toString()
+def ratioIpo = (found.ratioIpo ?: &quot;2470&quot;).toString()
+def concede  = (found.concede ?: &quot;1&quot;).toString()
+def score    = (found.score ?: &quot;0:0&quot;).toString()
+def betItem  = (found.betItem ?: vars.get(&quot;sel_homeTeam&quot;)).toString()
+
+vars.put(&quot;pw_ior&quot;, ior)
+vars.put(&quot;pw_ratio&quot;, ratio)
+vars.put(&quot;pw_ratioIpo&quot;, ratioIpo)
+vars.put(&quot;pw_concede&quot;, concede)
+vars.put(&quot;pw_score&quot;, score)
+vars.put(&quot;pw_betItem&quot;, betItem)
+vars.put(&quot;pw_ok&quot;, &quot;1&quot;)</stringProp>
+            </JSR223PostProcessor>
+            <hashTree/>
+          </hashTree>
+
+          <!-- 步骤 2：moreBetting（用真实赔率投注） -->
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If 点水成功" enabled="true">
+            <stringProp name="IfController.condition">${__groovy(vars.get("pw_ok") == "1")}</stringProp>
+            <boolProp name="IfController.evaluateAll">false</boolProp>
+            <boolProp name="IfController.useExpression">true</boolProp>
+          </IfController>
+          <hashTree>
+            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /bet/order/moreBetting（投注）" enabled="true">
+              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+                <collectionProp name="Arguments.arguments">
+                  <elementProp name="" elementType="HTTPArgument">
+                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                    <stringProp name="Argument.value">{&quot;autoOdd&quot;:&quot;S&quot;,&quot;betType&quot;:1,&quot;oddfType&quot;:&quot;H&quot;,&quot;isCredit&quot;:&quot;N&quot;,&quot;groupId&quot;:1,&quot;s&quot;:&quot;sdfds@#21&quot;,&quot;t&quot;:${__time(,)},&quot;betSubList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;gold&quot;:${BET_GOLD},&quot;ratioType&quot;:&quot;MH&quot;,&quot;ratioIpo&quot;:&quot;${pw_ratioIpo}&quot;,&quot;ratio&quot;:&quot;${pw_ratio}&quot;,&quot;ior&quot;:&quot;${pw_ior}&quot;,&quot;concede&quot;:&quot;${pw_concede}&quot;,&quot;leagueId&quot;:&quot;${sel_leagueId}&quot;,&quot;betItem&quot;:&quot;${pw_betItem}&quot;,&quot;specifiers&quot;:&quot;{}&quot;,&quot;score&quot;:&quot;${pw_score}&quot;,&quot;pgidm&quot;:&quot;${sel_gidm}&quot;,&quot;strong&quot;:&quot;H&quot;,&quot;anchorId&quot;:&quot;&quot;,&quot;eoIor&quot;:null}],&quot;autoRatio&quot;:&quot;Y&quot;,&quot;betOptions&quot;:&quot;1,0,1&quot;}</stringProp>
+                    <stringProp name="Argument.metadata">=</stringProp>
+                  </elementProp>
+                </collectionProp>
+              </elementProp>
+              <stringProp name="HTTPSampler.path">/ai/mobile/bet/order/moreBetting</stringProp>
+              <stringProp name="HTTPSampler.method">POST</stringProp>
+            </HTTPSamplerProxy>
+            <hashTree/>
+          </hashTree>
+        </hashTree>
+
+        <!-- ============ 其余 8 个接口各 6.25%（合计 50%） ============ -->
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - getBalance" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /player/getBalance" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="wid" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">wid</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/player/getBalance</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - playerAccount" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /player/playerAccount" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments"><collectionProp name="Arguments.arguments"/></elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/player/playerAccount</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - home/common/matches" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /home/common/matches" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="gameSort" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameSort</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="gameType" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameType</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="showIcon" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">showIcon</stringProp><stringProp name="Argument.value">true</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="gameTypeSon" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameTypeSon</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="showtype" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">showtype</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="page" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">page</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="pageSize" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">pageSize</stringProp><stringProp name="Argument.value">10</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="groupId" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">groupId</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/home/common/matches</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - getGameManyInfo" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /api/c/game/getGameManyInfo" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="gidms" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gidms</stringProp><stringProp name="Argument.value">412175655,6806197594564124672,6806219112262139904,413078428,412290013,6806421724500652032,413153041,17524894,6806212935696576512,413258676</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/dataPageServer/api/c/game/getGameManyInfo</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - getRBCondition" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /matches/getRBCondition" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="groupId" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">groupId</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/matches/getRBCondition</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - orderLeagueList" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /commonMatches/orderLeagueList" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="gameTypeSon" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameTypeSon</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="gameType" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameType</stringProp><stringProp name="Argument.value">FT</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="showtype" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">showtype</stringProp><stringProp name="Argument.value">RB</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="leagueIds" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">leagueIds</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="timeStage" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">timeStage</stringProp><stringProp name="Argument.value">0</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="gameSort" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">gameSort</stringProp><stringProp name="Argument.value">4</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="dateStage" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">dateStage</stringProp><stringProp name="Argument.value">0</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="isNovice" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">isNovice</stringProp><stringProp name="Argument.value">Y</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="onlyFavorite" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">onlyFavorite</stringProp><stringProp name="Argument.value">0</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="groupId" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">groupId</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="virtualType" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">virtualType</stringProp><stringProp name="Argument.value">2</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/matches/commonMatches/orderLeagueList</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - capitalRecords" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="GET /player/capitalRecords" enabled="true">
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="page" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">page</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="pageSize" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">pageSize</stringProp><stringProp name="Argument.value">20</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="beginDate" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">beginDate</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="endDate" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">endDate</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="needCount" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">needCount</stringProp><stringProp name="Argument.value">1</stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+                <elementProp name="tradeType" elementType="HTTPArgument"><boolProp name="HTTPArgument.always_encode">false</boolProp><stringProp name="Argument.name">tradeType</stringProp><stringProp name="Argument.value"></stringProp><stringProp name="Argument.metadata">=</stringProp><boolProp name="HTTPArgument.use_equals">true</boolProp></elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/player/capitalRecords</stringProp>
+            <stringProp name="HTTPSampler.method">GET</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - betRecordTab" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /order/all/betRecordTab" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;orderState&quot;:&quot;0&quot;,&quot;page&quot;:1,&quot;pageSize&quot;:10,&quot;beginTime&quot;:&quot;&quot;,&quot;endTime&quot;:&quot;&quot;}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/order/all/betRecordTab</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 6.25% - morePW（独立点水，不投注）" enabled="true">
+          <intProp name="ThroughputController.style">1</intProp>
+          <boolProp name="ThroughputController.perThread">false</boolProp>
+          <intProp name="ThroughputController.maxThroughput">1</intProp>
+          <FloatProperty><name>ThroughputController.percentThroughput</name><value>6.25</value><savedValue>0.0</savedValue></FloatProperty>
+        </ThroughputController>
+        <hashTree>
+          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /bet/order/morePW" enabled="true">
+            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+              <collectionProp name="Arguments.arguments">
+                <elementProp name="" elementType="HTTPArgument">
+                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                  <stringProp name="Argument.value">{&quot;betList&quot;:[{&quot;gidm&quot;:&quot;ib_7764494&quot;,&quot;gameId&quot;:&quot;7062614&quot;,&quot;gameType&quot;:&quot;FT&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;ratioType&quot;:&quot;MH&quot;,&quot;score&quot;:&quot;&quot;,&quot;ratio&quot;:&quot;+12470&quot;,&quot;betItem&quot;:&quot;巴黎圣日耳曼&quot;,&quot;ratioKey&quot;:&quot;ib_7764494_7062614_M_MH&quot;,&quot;systemId&quot;:&quot;6832360251084001280&quot;,&quot;homeTeamSuffix&quot;:&quot;&quot;}],&quot;oddfType&quot;:&quot;H&quot;,&quot;groupId&quot;:1,&quot;sourceType&quot;:true}</stringProp>
+                  <stringProp name="Argument.metadata">=</stringProp>
+                </elementProp>
+              </collectionProp>
+            </elementProp>
+            <stringProp name="HTTPSampler.path">/ai/mobile/bet/order/morePW</stringProp>
+            <stringProp name="HTTPSampler.method">POST</stringProp>
+          </HTTPSamplerProxy>
+          <hashTree/>
+        </hashTree>
+
+      </hashTree>
+
+      <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp><name>saveConfig</name><value class="SampleSaveConfiguration">
+          <time>true</time><latency>true</latency><timestamp>true</timestamp><success>true</success><label>true</label><code>true</code><message>true</message><threadName>true</threadName><dataType>true</dataType><encoding>false</encoding><assertions>true</assertions><subresults>true</subresults><responseData>false</responseData><samplerData>false</samplerData><xml>false</xml><fieldNames>true</fieldNames><responseHeaders>false</responseHeaders><requestHeaders>false</requestHeaders><responseDataOnError>false</responseDataOnError><saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage><assertionsResultsToSave>0</assertionsResultsToSave><bytes>true</bytes><sentBytes>true</sentBytes><url>true</url><threadCounts>true</threadCounts><idleTime>true</idleTime><connectTime>true</connectTime>
+        </value></objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+
+      <ResultCollector guiclass="StatVisualizer" testclass="ResultCollector" testname="Aggregate Report" enabled="true">
+        <boolProp name="ResultCollector.error_logging">false</boolProp>
+        <objProp><name>saveConfig</name><value class="SampleSaveConfiguration">
+          <time>true</time><latency>true</latency><timestamp>true</timestamp><success>true</success><label>true</label><code>true</code><message>true</message><threadName>true</threadName><dataType>true</dataType><encoding>false</encoding><assertions>true</assertions><subresults>true</subresults><responseData>false</responseData><samplerData>false</samplerData><xml>false</xml><fieldNames>true</fieldNames><responseHeaders>false</responseHeaders><requestHeaders>false</requestHeaders><responseDataOnError>false</responseDataOnError><saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage><assertionsResultsToSave>0</assertionsResultsToSave><bytes>true</bytes><sentBytes>true</sentBytes><url>true</url><threadCounts>true</threadCounts><idleTime>true</idleTime><connectTime>true</connectTime>
+        </value></objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+
+      <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree（调试用，正式压测请禁用）" enabled="false">
+        <boolProp name="ResultCollector.error_logging">true</boolProp>
+        <objProp><name>saveConfig</name><value class="SampleSaveConfiguration">
+          <time>true</time><latency>true</latency><timestamp>true</timestamp><success>true</success><label>true</label><code>true</code><message>true</message><threadName>true</threadName><dataType>true</dataType><encoding>false</encoding><assertions>true</assertions><subresults>true</subresults><responseData>false</responseData><samplerData>false</samplerData><xml>false</xml><fieldNames>true</fieldNames><responseHeaders>false</responseHeaders><requestHeaders>false</requestHeaders><responseDataOnError>true</responseDataOnError><saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage><assertionsResultsToSave>0</assertionsResultsToSave><bytes>true</bytes><sentBytes>true</sentBytes><url>true</url><threadCounts>true</threadCounts><idleTime>true</idleTime><connectTime>true</connectTime>
+        </value></objProp>
+        <stringProp name="filename"></stringProp>
+      </ResultCollector>
+      <hashTree/>
+
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

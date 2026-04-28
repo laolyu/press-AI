@@ -1,0 +1,265 @@
+ai/mobile/player/getBalance	GET	wid=1	热门	查询会员余额
+curl 'https://01m.cruzbear666.com/ai/mobile/player/getBalance?wid=1' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -H 'groupid: 0' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/' \
+  -H 'reqid: 465372026042814494474179493736144277' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 680c97c8-eb4e-4a1b-befe-0daeb69d3723' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+
+ai/mobile/player/playerAccount	GET	登录用户	热门	查询会员基础信息
+curl 'https://01m.cruzbear666.com/ai/mobile/player/playerAccount' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -H 'groupid: 0' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/' \
+  -H 'reqid: 465372026042814494474179493736144277' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 2c96cc98-c410-4790-bea6-baea26f8aa9e' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+
+ai/mobile/home/common/matches	GET	gameSort=1&gameType=&showIcon=true&gameTypeSon=&showtype=&page=1&pageSize=10&groupId=1	热门	赛事列表
+curl 'https://01m.cruzbear666.com/ai/mobile/home/common/matches?gameSort=1&gameType=&showIcon=true&gameTypeSon=&showtype=&page=2&pageSize=10&groupId=3' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777358987' \
+  -H 'groupid: 3' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/' \
+  -H 'reqid: 465372026042814494474179493736144277' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 0507d8a0-5948-415e-b8e9-11077743d658' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+api/c/game/getGameManyInfo	GET	gidms=412175655,6806197594564124672,6806219112262139904,413078428,412290013,6806421724500652032,413153041,17524894,6806212935696576512,413258676	热门	赛事多语言
+curl 'https://01m.cruzbear666.com/ai/mobile/dataPageServer/api/c/game/getGameManyInfo?gidms=6832724434266939392,413521279,413521280,413521283,413521276,412160892,413682244,6836556423369637888,6836669313581899776' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777358987' \
+  -H 'groupid: 3' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/' \
+  -H 'reqid: 465372026042814494474179493736144277' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: e42d5352-40fc-4c67-9599-968e38565429' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+
+ai/mobile/matches/getRBCondition	GET	groupId=1	滚球	滚球体育项
+curl 'https://01m.cruzbear666.com/ai/mobile/matches/getRBCondition?groupId=1' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777360549' \
+  -H 'groupid: 1' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/inplay' \
+  -H 'reqid: 060032026042815154610025844307611362' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 1451ebbc-d7e0-454d-900f-48153669d65c' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+"ai/mobile/matches/commonMatches/orderLeagueList"	GET	gameTypeSon=&gameType=FT&showtype=RB&leagueIds=&timeStage=0&gameSort=4&dateStage=0&isNovice=Y&onlyFavorite=0&groupId=1&virtualType=2	滚球	联赛分组
+curl 'https://01m.cruzbear666.com/ai/mobile/matches/commonMatches/orderLeagueList?gameTypeSon=&gameType=XNFT&showtype=RB&leagueIds=&timeStage=0&gameSort=4&dateStage=0&isNovice=Y&onlyFavorite=0&groupId=1&virtualType=1' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777360549' \
+  -H 'groupid: 1' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/inplay' \
+  -H 'reqid: 060032026042815154610025844307611362' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 4d054d0c-8995-4df4-b188-5a80ca6d3183' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+ai/mobile/player/capitalRecords	GET	page=1&pageSize=20&beginDate=&endDate=&needCount=1&tradeType=	钱包	流水列表
+curl 'https://01m.cruzbear666.com/ai/mobile/player/capitalRecords?page=1&pageSize=20&beginDate=&endDate=&needCount=1&tradeType=' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777360549' \
+  -H 'groupid: 1' \
+  -H 'lang: zh-cn' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/wallet' \
+  -H 'reqid: 060032026042815154610025844307611362' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 1081abc4-444e-4db0-804f-eb152ad219b2' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1'
+
+ai/mobile/order/all/betRecordTab	POST		注单	注单列表
+curl 'https://01m.cruzbear666.com/ai/mobile/order/all/betRecordTab' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json;charset=UTF-8' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777360549' \
+  -H 'groupid: 1' \
+  -H 'lang: zh-cn' \
+  -H 'origin: https://01m.cruzbear666.com' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/history?searchBetType=1' \
+  -H 'reqid: 060032026042815154610025844307611362' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: e6edfa1d-7211-4ae1-bce2-bb9c16520141' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1' \
+  --data-raw '{"orderState":"0","page":1,"pageSize":10,"beginTime":"","endTime":""}'
+
+ai/mobile/bet/order/morePW	POST		注单	点水
+curl 'https://01m.cruzbear666.com/ai/mobile/bet/order/morePW' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json;charset=UTF-8' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777360549' \
+  -H 'groupid: 1' \
+  -H 'lang: zh-cn' \
+  -H 'origin: https://01m.cruzbear666.com' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/' \
+  -H 'reqid: 060032026042815154610025844307611362' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 6f328c6b-501e-4c3a-bdb0-c71110c8926c' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1' \
+  --data-raw '{"betList":[{"gidm":"ib_7764494","gameId":"7062614","gameType":"FT","playType":"M","ratioType":"MH","score":"","ratio":"+12470","betItem":"巴黎圣日耳曼","ratioKey":"ib_7764494_7062614_M_MH","systemId":"6832360251084001280","homeTeamSuffix":""}],"oddfType":"H","groupId":1,"sourceType":true}'
+
+ai/mobile/bet/order/moreBetting	POST		注单	投注
+curl 'https://01m.cruzbear666.com/ai/mobile/bet/order/moreBetting' \
+  -H 'accept: application/json, text/plain, */*' \
+  -H 'accept-language: zh-CN,zh;q=0.9' \
+  -H 'apiver: 4.15' \
+  -H 'cache-control: no-cache' \
+  -H 'content-type: application/json;charset=UTF-8' \
+  -b 'UM_distinctid=19dd2d9de022519-0730db46c308b5-4201521d-c5959-19dd2d9de033389; CNZZDATA1281462845=2009866502-1777358987-https%253A%252F%252F01m.cruzbear666.com%252F%7C1777360549' \
+  -H 'groupid: 1' \
+  -H 'lang: zh-cn' \
+  -H 'origin: https://01m.cruzbear666.com' \
+  -H 'pragma: no-cache' \
+  -H 'priority: u=1, i' \
+  -H 'referer: https://01m.cruzbear666.com/' \
+  -H 'reqid: 060032026042815154610025844307611362' \
+  -H 'sec-ch-ua: "Google Chrome";v="147", "Not.A/Brand";v="8", "Chromium";v="147"' \
+  -H 'sec-ch-ua-mobile: ?1' \
+  -H 'sec-ch-ua-platform: "Android"' \
+  -H 'sec-fetch-dest: empty' \
+  -H 'sec-fetch-mode: cors' \
+  -H 'sec-fetch-site: same-origin' \
+  -H 'tertype: 2' \
+  -H 'token: eb5fb21fdd7f4d6da7101c0ab00d86f9' \
+  -H 'traceid: 63a56573-5119-48f4-967f-28ed39ba1b6d' \
+  -H 'user-agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36' \
+  -H 'wid: 1' \
+  --data-raw '{"autoOdd":"S","betType":1,"oddfType":"H","isCredit":"N","groupId":1,"s":"sdfds@#21","t":1777361155047,"betSubList":[{"gidm":"ib_7764494","gameId":"7062614","playType":"M","gold":50,"ratioType":"MH","ratioIpo":"2470","ratio":"1+2470","ior":"2.47","concede":"1","leagueId":"","betItem":"巴黎圣日耳曼","specifiers":"{}","score":"0:0","pgidm":"ib_7764494","strong":"H","anchorId":"","eoIor":null}],"autoRatio":"Y","betOptions":"1,0,1"}'
+
+login
+curl -H "Host: 01m.cruzbear666.com" -H "Pragma: no-cache" -H "Cache-Control: no-cache" -H "sec-ch-ua-platform: \"Android\"" -H "wid: 1" -H "terType: 2" -H "lang: zh-cn" -H "sec-ch-ua: \"Google Chrome\";v=\"147\", \"Not.A/Brand\";v=\"8\", \"Chromium\";v=\"147\"" -H "groupId: 0" -H "sec-ch-ua-mobile: ?1" -H "apiVer: 4.15" -H "reqId: 379532026042814223171636959254665920" -H "User-Agent: Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36" -H "Accept: application/json, text/plain, */*" -H "traceId: 302b5f13-f05e-41f7-8a8a-3e2c9f0793f1" -H "Content-Type: application/json;charset=UTF-8" -H "token: null" -H "Origin: https://01m.cruzbear666.com" -H "Sec-Fetch-Site: same-origin" -H "Sec-Fetch-Mode: cors" -H "Sec-Fetch-Dest: empty" -H "Referer: https://01m.cruzbear666.com/login" -H "Accept-Language: zh-CN,zh;q=0.9" --data-binary "{\"merchantId\":\"136ebd8d5055e6edc6f1bf39289e740f\",\"loginName\":\"press001\",\"passWord\":\"62c8ad0a15d9d1ca38d5dee762a16e01\"}" "https://01m.cruzbear666.com/ai/mobile/login"
+
+{"code":200,"msg":"SUCCESS","systemTime":1777358802073,"data":"eb5fb21fdd7f4d6da7101c0ab00d86f9","t":-1}
+

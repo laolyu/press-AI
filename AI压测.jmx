@@ -356,7 +356,7 @@ def games = json?.data?.games ?: []
 games.each { item -&gt;
     if (!(item instanceof Map)) return
     // 按优先级取一个有 gidm 的 game 子对象（主流盘口 M 优先）
-    def gameObj = item.M?.game ?: item.HM?.game ?: item.HR?.game ?: item.R?.game ?: item.HOU?.game ?: item.EO?.game
+    def gameObj = item.M?.game   // 只取主赛 M 盘口，确保 morePW/moreBetting 的 playType 一致
     if (!gameObj || !gameObj.gidm || !gameObj.gameId) return
     pool &lt;&lt; [
         gidm          : gameObj.gidm.toString(),
@@ -386,7 +386,7 @@ log.info(&quot;赛事池大小: &quot; + uniq.size())</stringProp>
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="主压测线程组（阶梯加压）" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="主压测线程组（阶梯加压）">
         <stringProp name="ThreadGroup.num_threads">${__P(threads,50)}</stringProp>
         <stringProp name="ThreadGroup.ramp_time">${__P(rampup,600)}</stringProp>
         <stringProp name="ThreadGroup.duration">${__P(duration,3600)}</stringProp>
@@ -400,7 +400,7 @@ log.info(&quot;赛事池大小: &quot; + uniq.size())</stringProp>
         </elementProp>
       </ThreadGroup>
       <hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="tokens.csv - loginName,token">
+        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="tokens.csv - loginName,token" enabled="true">
           <stringProp name="filename">tokens.csv</stringProp>
           <stringProp name="fileEncoding">UTF-8</stringProp>
           <stringProp name="variableNames">loginName,token</stringProp>
@@ -471,7 +471,7 @@ log.info(&quot;赛事池大小: &quot; + uniq.size())</stringProp>
           <intProp name="Assertion.test_type">8</intProp>
         </ResponseAssertion>
         <hashTree/>
-        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 50% - 投注事务（动态点水→投注）">
+        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 50% - 投注事务（动态点水→投注）" enabled="true">
           <intProp name="ThroughputController.style">1</intProp>
           <boolProp name="ThroughputController.perThread">false</boolProp>
           <intProp name="ThroughputController.maxThroughput">1</intProp>
@@ -482,7 +482,7 @@ log.info(&quot;赛事池大小: &quot; + uniq.size())</stringProp>
           </FloatProperty>
         </ThroughputController>
         <hashTree>
-          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="从赛事池随机选一场" enabled="true">
+          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="从赛事池随机选一场">
             <stringProp name="scriptLanguage">groovy</stringProp>
             <stringProp name="parameters"></stringProp>
             <stringProp name="filename"></stringProp>
@@ -561,11 +561,13 @@ vars.put(&quot;pw_ratioIpo&quot;, ratioIpo)
 vars.put(&quot;pw_concede&quot;,  concede)
 vars.put(&quot;pw_score&quot;,    score)
 vars.put(&quot;pw_betItem&quot;,  betItem)
+vars.put(&quot;pw_ratioType&quot;, (found.ratioType ?: &quot;MH&quot;).toString())
+vars.put(&quot;pw_playType&quot;,  (found.playType  ?: &quot;M&quot;).toString())
 vars.put(&quot;pw_ok&quot;,       &quot;1&quot;)</stringProp>
             </JSR223PostProcessor>
             <hashTree/>
           </hashTree>
-          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If 点水成功" enabled="true">
+          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If 点水成功">
             <stringProp name="IfController.condition">${__groovy(vars.get(&quot;pw_ok&quot;) == &quot;1&quot;)}</stringProp>
             <boolProp name="IfController.evaluateAll">false</boolProp>
             <boolProp name="IfController.useExpression">true</boolProp>
@@ -579,7 +581,7 @@ vars.put(&quot;pw_ok&quot;,       &quot;1&quot;)</stringProp>
                 <collectionProp name="Arguments.arguments">
                   <elementProp name="" elementType="HTTPArgument">
                     <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">{&quot;autoOdd&quot;:&quot;S&quot;,&quot;betType&quot;:1,&quot;oddfType&quot;:&quot;H&quot;,&quot;isCredit&quot;:&quot;N&quot;,&quot;groupId&quot;:1,&quot;s&quot;:&quot;sdfds@#21&quot;,&quot;t&quot;:${__time(,)},&quot;betSubList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;gold&quot;:${BET_GOLD},&quot;ratioType&quot;:&quot;MH&quot;,&quot;ratioIpo&quot;:&quot;${pw_ratioIpo}&quot;,&quot;ratio&quot;:&quot;${pw_ratio}&quot;,&quot;ior&quot;:&quot;${pw_ior}&quot;,&quot;concede&quot;:&quot;${pw_concede}&quot;,&quot;leagueId&quot;:&quot;${sel_leagueId}&quot;,&quot;betItem&quot;:&quot;${pw_betItem}&quot;,&quot;specifiers&quot;:&quot;{}&quot;,&quot;score&quot;:&quot;${pw_score}&quot;,&quot;pgidm&quot;:&quot;${sel_gidm}&quot;,&quot;strong&quot;:&quot;${sel_strong}&quot;,&quot;anchorId&quot;:&quot;&quot;,&quot;eoIor&quot;:null}],&quot;autoRatio&quot;:&quot;Y&quot;,&quot;betOptions&quot;:&quot;1,0,1&quot;}</stringProp>
+                    <stringProp name="Argument.value">{&quot;autoOdd&quot;:&quot;S&quot;,&quot;betType&quot;:1,&quot;oddfType&quot;:&quot;H&quot;,&quot;isCredit&quot;:&quot;N&quot;,&quot;groupId&quot;:1,&quot;s&quot;:&quot;sdfds@#21&quot;,&quot;t&quot;:${__time(,)},&quot;betSubList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;playType&quot;:&quot;${pw_playType}&quot;,&quot;gold&quot;:${BET_GOLD},&quot;ratioType&quot;:&quot;${pw_ratioType}&quot;,&quot;ratioIpo&quot;:&quot;${pw_ratioIpo}&quot;,&quot;ratio&quot;:&quot;${pw_ratio}&quot;,&quot;ior&quot;:&quot;${pw_ior}&quot;,&quot;concede&quot;:&quot;${pw_concede}&quot;,&quot;leagueId&quot;:&quot;${sel_leagueId}&quot;,&quot;betItem&quot;:&quot;${pw_betItem}&quot;,&quot;specifiers&quot;:&quot;{}&quot;,&quot;score&quot;:&quot;${pw_score}&quot;,&quot;pgidm&quot;:&quot;${sel_gidm}&quot;,&quot;strong&quot;:&quot;${sel_strong}&quot;,&quot;anchorId&quot;:&quot;&quot;,&quot;eoIor&quot;:null}],&quot;autoRatio&quot;:&quot;Y&quot;,&quot;betOptions&quot;:&quot;1,0,1&quot;}</stringProp>
                     <stringProp name="Argument.metadata">=</stringProp>
                   </elementProp>
                 </collectionProp>
@@ -1103,211 +1105,7 @@ vars.put(&quot;pw_ok&quot;,       &quot;1&quot;)</stringProp>
         <stringProp name="filename"></stringProp>
       </ResultCollector>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="线程组">
-        <intProp name="ThreadGroup.num_threads">5</intProp>
-        <intProp name="ThreadGroup.ramp_time">5</intProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="循环控制器">
-          <stringProp name="LoopController.loops">1</stringProp>
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-        </elementProp>
-      </ThreadGroup>
-      <hashTree>
-        <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="tokens.csv - loginName,token" enabled="true">
-          <stringProp name="filename">tokens.csv</stringProp>
-          <stringProp name="fileEncoding">UTF-8</stringProp>
-          <stringProp name="variableNames">loginName,token</stringProp>
-          <boolProp name="ignoreFirstLine">false</boolProp>
-          <stringProp name="delimiter">,</stringProp>
-          <boolProp name="quotedData">false</boolProp>
-          <boolProp name="recycle">true</boolProp>
-          <boolProp name="stopThread">false</boolProp>
-          <stringProp name="shareMode">shareMode.all</stringProp>
-        </CSVDataSet>
-        <hashTree/>
-        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="通用 Headers（含 token）" enabled="true">
-          <collectionProp name="HeaderManager.headers">
-            <elementProp name="h0" elementType="Header">
-              <stringProp name="Header.name">Accept</stringProp>
-              <stringProp name="Header.value">application/json, text/plain, */*</stringProp>
-            </elementProp>
-            <elementProp name="h1" elementType="Header">
-              <stringProp name="Header.name">Content-Type</stringProp>
-              <stringProp name="Header.value">application/json;charset=UTF-8</stringProp>
-            </elementProp>
-            <elementProp name="h2" elementType="Header">
-              <stringProp name="Header.name">apiver</stringProp>
-              <stringProp name="Header.value">4.15</stringProp>
-            </elementProp>
-            <elementProp name="h3" elementType="Header">
-              <stringProp name="Header.name">wid</stringProp>
-              <stringProp name="Header.value">1</stringProp>
-            </elementProp>
-            <elementProp name="h4" elementType="Header">
-              <stringProp name="Header.name">tertype</stringProp>
-              <stringProp name="Header.value">2</stringProp>
-            </elementProp>
-            <elementProp name="h5" elementType="Header">
-              <stringProp name="Header.name">groupid</stringProp>
-              <stringProp name="Header.value">1</stringProp>
-            </elementProp>
-            <elementProp name="h6" elementType="Header">
-              <stringProp name="Header.name">lang</stringProp>
-              <stringProp name="Header.value">zh-cn</stringProp>
-            </elementProp>
-            <elementProp name="h7" elementType="Header">
-              <stringProp name="Header.name">Origin</stringProp>
-              <stringProp name="Header.value">https://01m.cruzbear666.com</stringProp>
-            </elementProp>
-            <elementProp name="h8" elementType="Header">
-              <stringProp name="Header.name">Referer</stringProp>
-              <stringProp name="Header.value">https://01m.cruzbear666.com/</stringProp>
-            </elementProp>
-            <elementProp name="h9" elementType="Header">
-              <stringProp name="Header.name">User-Agent</stringProp>
-              <stringProp name="Header.value">Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Mobile Safari/537.36</stringProp>
-            </elementProp>
-            <elementProp name="h10" elementType="Header">
-              <stringProp name="Header.name">token</stringProp>
-              <stringProp name="Header.value">${token}</stringProp>
-            </elementProp>
-          </collectionProp>
-        </HeaderManager>
-        <hashTree/>
-        <ResponseAssertion guiclass="AssertionGui" testclass="ResponseAssertion" testname="HTTP 200 断言" enabled="true">
-          <collectionProp name="Asserion.test_strings">
-            <stringProp name="49586">200</stringProp>
-          </collectionProp>
-          <stringProp name="Assertion.custom_message"></stringProp>
-          <stringProp name="Assertion.test_field">Assertion.response_code</stringProp>
-          <boolProp name="Assertion.assume_success">false</boolProp>
-          <intProp name="Assertion.test_type">8</intProp>
-        </ResponseAssertion>
-        <hashTree/>
-        <ThroughputController guiclass="ThroughputControllerGui" testclass="ThroughputController" testname="TC 50% - 投注事务（动态点水→投注）">
-          <intProp name="ThroughputController.style">1</intProp>
-          <boolProp name="ThroughputController.perThread">false</boolProp>
-          <intProp name="ThroughputController.maxThroughput">1</intProp>
-          <FloatProperty>
-            <name>ThroughputController.percentThroughput</name>
-            <value>100.0</value>
-            <savedValue>0.0</savedValue>
-          </FloatProperty>
-        </ThroughputController>
-        <hashTree>
-          <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="从赛事池随机选一场" enabled="true">
-            <stringProp name="scriptLanguage">groovy</stringProp>
-            <stringProp name="parameters"></stringProp>
-            <stringProp name="filename"></stringProp>
-            <stringProp name="cacheKey">true</stringProp>
-            <stringProp name="script">def pool = props.get(&quot;BET_POOL&quot;)
-if (pool == null || pool.isEmpty()) {
-    vars.put(&quot;sel_gidm&quot;, &quot;ib_7764494&quot;)
-    vars.put(&quot;sel_gameId&quot;, &quot;7062614&quot;)
-    vars.put(&quot;sel_gameType&quot;, &quot;FT&quot;)
-    vars.put(&quot;sel_leagueId&quot;, &quot;42&quot;)
-    vars.put(&quot;sel_systemId&quot;, &quot;6832360251084001280&quot;)
-    vars.put(&quot;sel_homeTeamSuffix&quot;, &quot;&quot;)
-    vars.put(&quot;sel_strong&quot;, &quot;H&quot;)
-    return
-}
-def idx = new Random().nextInt(pool.size())
-def m = pool[idx]
-vars.put(&quot;sel_gidm&quot;, m.gidm)
-vars.put(&quot;sel_gameId&quot;, m.gameId)
-vars.put(&quot;sel_gameType&quot;, m.gameType)
-vars.put(&quot;sel_leagueId&quot;, m.leagueId)
-vars.put(&quot;sel_systemId&quot;, m.systemId)
-vars.put(&quot;sel_homeTeamSuffix&quot;, m.homeTeamSuffix ?: &quot;&quot;)
-vars.put(&quot;sel_strong&quot;, m.strong ?: &quot;H&quot;)</stringProp>
-          </JSR223PreProcessor>
-          <hashTree/>
-          <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /bet/order/morePW（点水）" enabled="true">
-            <stringProp name="HTTPSampler.path">/ai/mobile/bet/order/morePW</stringProp>
-            <stringProp name="HTTPSampler.method">POST</stringProp>
-            <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-            <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-              <collectionProp name="Arguments.arguments">
-                <elementProp name="" elementType="HTTPArgument">
-                  <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&quot;betList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;gameType&quot;:&quot;${sel_gameType}&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;ratioType&quot;:&quot;MH&quot;,&quot;score&quot;:&quot;&quot;,&quot;ratio&quot;:&quot;&quot;,&quot;betItem&quot;:&quot;&quot;,&quot;ratioKey&quot;:&quot;${sel_gidm}_${sel_gameId}_M_MH&quot;,&quot;systemId&quot;:&quot;${sel_systemId}&quot;,&quot;homeTeamSuffix&quot;:&quot;${sel_homeTeamSuffix}&quot;}],&quot;oddfType&quot;:&quot;H&quot;,&quot;groupId&quot;:1,&quot;sourceType&quot;:true}</stringProp>
-                  <stringProp name="Argument.metadata">=</stringProp>
-                </elementProp>
-              </collectionProp>
-            </elementProp>
-          </HTTPSamplerProxy>
-          <hashTree>
-            <JSR223PostProcessor guiclass="TestBeanGUI" testclass="JSR223PostProcessor" testname="解析点水结果（提取最新 ior/ratio）" enabled="true">
-              <stringProp name="scriptLanguage">groovy</stringProp>
-              <stringProp name="parameters"></stringProp>
-              <stringProp name="filename"></stringProp>
-              <stringProp name="cacheKey">true</stringProp>
-              <stringProp name="script">import groovy.json.JsonSlurper
-
-vars.put(&quot;pw_ok&quot;, &quot;0&quot;)
-def txt = prev.getResponseDataAsString()
-if (!txt) return
-
-def json
-try { json = new JsonSlurper().parseText(txt) } catch (e) { return }
-
-if (json?.code != 200) return
-
-// 直接取 data.orderData[0]，无需递归遍历
-def found = json?.data?.orderData?.getAt(0)
-
-if (found == null || !found.ior || found.errorCode != null) {
-    // 点水失败或赔率不可用，跳过本次投注
-    return
-}
-
-def ior      = found.ior.toString()
-def ratio    = (found.ratio    ?: &quot;&quot;).toString()
-def ratioIpo = (found.ratioIpo ?: &quot;&quot;).toString()
-def concede  = (found.concede  ?: &quot;&quot;).toString()
-def score    = (found.score    ?: &quot;&quot;).toString()
-def betItem  = (found.betItem  ?: &quot;&quot;).toString()
-
-vars.put(&quot;pw_ior&quot;,      ior)
-vars.put(&quot;pw_ratio&quot;,    ratio)
-vars.put(&quot;pw_ratioIpo&quot;, ratioIpo)
-vars.put(&quot;pw_concede&quot;,  concede)
-vars.put(&quot;pw_score&quot;,    score)
-vars.put(&quot;pw_betItem&quot;,  betItem)
-vars.put(&quot;pw_ok&quot;,       &quot;1&quot;)</stringProp>
-            </JSR223PostProcessor>
-            <hashTree/>
-          </hashTree>
-          <IfController guiclass="IfControllerPanel" testclass="IfController" testname="If 点水成功">
-            <stringProp name="IfController.condition">${__groovy(vars.get(&quot;pw_ok&quot;) == &quot;1&quot;)}</stringProp>
-            <boolProp name="IfController.evaluateAll">false</boolProp>
-            <boolProp name="IfController.useExpression">true</boolProp>
-          </IfController>
-          <hashTree>
-            <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="POST /bet/order/moreBetting（投注）" enabled="true">
-              <stringProp name="HTTPSampler.path">/ai/mobile/bet/order/moreBetting</stringProp>
-              <stringProp name="HTTPSampler.method">POST</stringProp>
-              <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-              <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-                <collectionProp name="Arguments.arguments">
-                  <elementProp name="" elementType="HTTPArgument">
-                    <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                    <stringProp name="Argument.value">{&quot;autoOdd&quot;:&quot;S&quot;,&quot;betType&quot;:1,&quot;oddfType&quot;:&quot;H&quot;,&quot;isCredit&quot;:&quot;N&quot;,&quot;groupId&quot;:1,&quot;s&quot;:&quot;sdfds@#21&quot;,&quot;t&quot;:${__time(,)},&quot;betSubList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;gold&quot;:${BET_GOLD},&quot;ratioType&quot;:&quot;MH&quot;,&quot;ratioIpo&quot;:&quot;${pw_ratioIpo}&quot;,&quot;ratio&quot;:&quot;${pw_ratio}&quot;,&quot;ior&quot;:&quot;${pw_ior}&quot;,&quot;concede&quot;:&quot;${pw_concede}&quot;,&quot;leagueId&quot;:&quot;${sel_leagueId}&quot;,&quot;betItem&quot;:&quot;${pw_betItem}&quot;,&quot;specifiers&quot;:&quot;{}&quot;,&quot;score&quot;:&quot;${pw_score}&quot;,&quot;pgidm&quot;:&quot;${sel_gidm}&quot;,&quot;strong&quot;:&quot;${sel_strong}&quot;,&quot;anchorId&quot;:&quot;&quot;,&quot;eoIor&quot;:null}],&quot;autoRatio&quot;:&quot;Y&quot;,&quot;betOptions&quot;:&quot;1,0,1&quot;}</stringProp>
-                    <stringProp name="Argument.metadata">=</stringProp>
-                  </elementProp>
-                </collectionProp>
-              </elementProp>
-            </HTTPSamplerProxy>
-            <hashTree/>
-          </hashTree>
-        </hashTree>
-        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="固定定时器">
-          <stringProp name="ConstantTimer.delay">300</stringProp>
-        </ConstantTimer>
-        <hashTree/>
-      </hashTree>
-      <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON断言">
+      <JSONPathAssertion guiclass="JSONPathAssertionGui" testclass="JSONPathAssertion" testname="JSON断言" enabled="true">
         <stringProp name="JSON_PATH">.code</stringProp>
         <stringProp name="EXPECTED_VALUE">200</stringProp>
         <boolProp name="JSONVALIDATION">true</boolProp>

@@ -1108,13 +1108,41 @@ vars.put(&quot;pw_ok&quot;,       &quot;1&quot;)</stringProp>
               <collectionProp name="Arguments.arguments">
                 <elementProp name="" elementType="HTTPArgument">
                   <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                  <stringProp name="Argument.value">{&quot;betList&quot;:[{&quot;gidm&quot;:&quot;ib_7764494&quot;,&quot;gameId&quot;:&quot;7062614&quot;,&quot;gameType&quot;:&quot;FT&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;ratioType&quot;:&quot;MH&quot;,&quot;score&quot;:&quot;&quot;,&quot;ratio&quot;:&quot;+12470&quot;,&quot;betItem&quot;:&quot;巴黎圣日耳曼&quot;,&quot;ratioKey&quot;:&quot;ib_7764494_7062614_M_MH&quot;,&quot;systemId&quot;:&quot;6832360251084001280&quot;,&quot;homeTeamSuffix&quot;:&quot;&quot;}],&quot;oddfType&quot;:&quot;H&quot;,&quot;groupId&quot;:1,&quot;sourceType&quot;:true}</stringProp>
+                  <stringProp name="Argument.value">{&quot;betList&quot;:[{&quot;gidm&quot;:&quot;${sel_gidm}&quot;,&quot;gameId&quot;:&quot;${sel_gameId}&quot;,&quot;gameType&quot;:&quot;${sel_gameType}&quot;,&quot;playType&quot;:&quot;M&quot;,&quot;ratioType&quot;:&quot;MH&quot;,&quot;score&quot;:&quot;&quot;,&quot;ratio&quot;:&quot;&quot;,&quot;betItem&quot;:&quot;&quot;,&quot;ratioKey&quot;:&quot;${sel_gidm}_${sel_gameId}_M_MH&quot;,&quot;systemId&quot;:&quot;${sel_systemId}&quot;,&quot;homeTeamSuffix&quot;:&quot;${sel_homeTeamSuffix}&quot;}],&quot;oddfType&quot;:&quot;H&quot;,&quot;groupId&quot;:1,&quot;sourceType&quot;:true}</stringProp>
                   <stringProp name="Argument.metadata">=</stringProp>
                 </elementProp>
               </collectionProp>
             </elementProp>
           </HTTPSamplerProxy>
-          <hashTree/>
+          <hashTree>
+            <JSR223PreProcessor guiclass="TestBeanGUI" testclass="JSR223PreProcessor" testname="从赛事池随机选一场" enabled="true">
+              <stringProp name="scriptLanguage">groovy</stringProp>
+              <stringProp name="parameters"></stringProp>
+              <stringProp name="filename"></stringProp>
+              <stringProp name="cacheKey">true</stringProp>
+              <stringProp name="script">def pool = props.get(&quot;BET_POOL&quot;)
+if (pool == null || pool.isEmpty()) {
+    vars.put(&quot;sel_gidm&quot;, &quot;ib_7764494&quot;)
+    vars.put(&quot;sel_gameId&quot;, &quot;7062614&quot;)
+    vars.put(&quot;sel_gameType&quot;, &quot;FT&quot;)
+    vars.put(&quot;sel_leagueId&quot;, &quot;42&quot;)
+    vars.put(&quot;sel_systemId&quot;, &quot;6832360251084001280&quot;)
+    vars.put(&quot;sel_homeTeamSuffix&quot;, &quot;&quot;)
+    vars.put(&quot;sel_strong&quot;, &quot;H&quot;)
+    return
+}
+def idx = new Random().nextInt(pool.size())
+def m = pool[idx]
+vars.put(&quot;sel_gidm&quot;, m.gidm)
+vars.put(&quot;sel_gameId&quot;, m.gameId)
+vars.put(&quot;sel_gameType&quot;, m.gameType)
+vars.put(&quot;sel_leagueId&quot;, m.leagueId)
+vars.put(&quot;sel_systemId&quot;, m.systemId)
+vars.put(&quot;sel_homeTeamSuffix&quot;, m.homeTeamSuffix ?: &quot;&quot;)
+vars.put(&quot;sel_strong&quot;, m.strong ?: &quot;H&quot;)</stringProp>
+            </JSR223PreProcessor>
+            <hashTree/>
+          </hashTree>
         </hashTree>
       </hashTree>
       <ResultCollector guiclass="SummaryReport" testclass="ResultCollector" testname="Summary Report">

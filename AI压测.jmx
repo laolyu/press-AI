@@ -38,12 +38,17 @@
           </elementProp>
           <elementProp name="rampup" elementType="Argument">
             <stringProp name="Argument.name">rampup</stringProp>
-            <stringProp name="Argument.value">60</stringProp>
+            <stringProp name="Argument.value">5</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="steps" elementType="Argument">
+            <stringProp name="Argument.name">steps</stringProp>
+            <stringProp name="Argument.value">5</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="duration" elementType="Argument">
             <stringProp name="Argument.name">duration</stringProp>
-            <stringProp name="Argument.value">900</stringProp>
+            <stringProp name="Argument.value">10</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
           <elementProp name="users" elementType="Argument">
@@ -516,11 +521,11 @@ log.info(&quot;赛事池大小: &quot; + uniq.size())</stringProp>
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <stringProp name="TargetLevel">${threads}</stringProp>
         <stringProp name="RampUp">${rampup}</stringProp>
-        <stringProp name="Steps">0</stringProp>
+        <stringProp name="Steps">${steps}</stringProp>
         <stringProp name="Hold">${duration}</stringProp>
         <stringProp name="LogFilename"></stringProp>
         <stringProp name="Iterations"></stringProp>
-        <stringProp name="Unit">S</stringProp>
+        <stringProp name="Unit">M</stringProp>
       </com.blazemeter.jmeter.threads.concurrency.ConcurrencyThreadGroup>
       <hashTree>
         <CSVDataSet guiclass="TestBeanGUI" testclass="CSVDataSet" testname="tokens.csv - loginName,token">
